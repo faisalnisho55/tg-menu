@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Menu</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0f1722; --blue:#2AABEE; --green:#4CAF50; --red:#C0392B;
+    --text:#fff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    min-height:100vh; padding:12px; -webkit-tap-highlight-color:transparent;
+  }
+  .header{text-align:center;padding:14px 8px 18px;font-size:15px;opacity:.9;line-height:1.4;}
+  .row{display:flex;gap:10px;margin-bottom:10px;}
+  .row.cols-2 > .btn{flex:1;}
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;padding:20px 14px;border:none;border-radius:12px;
+    color:#fff;font-size:17px;font-weight:600;cursor:pointer;text-align:center;
+    text-decoration:none;transition:filter .15s;user-select:none;
+    font-family:inherit;
+  }
+  .btn:active{filter:brightness(.85);}
+  .btn.blue{background:var(--blue);}
+  .btn.green{background:var(--green);}
+  .btn.red{background:var(--red);}
+  .btn .icon{font-size:22px;line-height:1;}
+  .btn .label{flex:1;}
+  .btn .arrow{font-size:18px;opacity:.85;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<div class="header">✅ Start using our bot now by clicking<br>the buttons below.</div>
+
+<div class="row">
+  <button class="btn blue" data-action="shop_0">
+    <span class="icon">🛍️</span>
+    <span class="label">Buy TG Accounts - Sessions</span>
+  </button>
+</div>
+
+<div class="row cols-2">
+  <button class="btn green" data-action="shop_0">
+    <span class="icon">➡️</span>
+    <span class="label">Sell TG Accounts</span>
+    <span class="arrow">↗</span>
+  </button>
+  <button class="btn blue" data-action="shop_0">
+    <span class="icon">🔍</span>
+    <span class="label">Available Countries</span>
+  </button>
+</div>
+
+<div class="row cols-2">
+  <button class="btn blue" data-action="recharge">
+    <span class="icon">💸</span>
+    <span class="label">Add Funds</span>
+  </button>
+  <button class="btn blue" data-action="account">
+    <span class="icon">🔗</span>
+    <span class="label">Referral</span>
+  </button>
+</div>
+
+<div class="row cols-2">
+  <button class="btn red" data-action="account">
+    <span class="icon">📄</span>
+    <span class="label">History</span>
+  </button>
+  <button class="btn red" data-action="rules">
+    <span class="icon">📋</span>
+    <span class="label">Rules</span>
+  </button>
+</div>
+
+<div class="row cols-2">
+  <button class="btn blue" data-action="open_contact">
+    <span class="icon">👨‍💼</span>
+    <span class="label">Help Service</span>
+  </button>
+  <button class="btn blue" data-action="open_proof">
+    <span class="icon">🔖</span>
+    <span class="label">Special Discount</span>
+  </button>
+</div>
+
+<div class="row hidden" id="adminRow">
+  <button class="btn green" data-action="admin">
+    <span class="icon">⚙️</span>
+    <span class="label">Admin Control</span>
+  </button>
+</div>
+
+<script>
+  const tg = window.Telegram?.WebApp;
+  const params = new URLSearchParams(location.search);
+
+  if (params.get("admin") === "1") {
+    document.getElementById("adminRow").classList.remove("hidden");
+  }
+
+  const proofLabel = params.get("pt");
+  const contactLabel = params.get("ct");
+  if (proofLabel) {
+    document.querySelectorAll('[data-action="open_proof"] .label').forEach(el => {
+      el.textContent = proofLabel;
+    });
+  }
+  if (contactLabel) {
+    document.querySelectorAll('[data-action="open_contact"] .label').forEach(el => {
+      el.textContent = contactLabel;
+    });
+  }
+
+  if (tg) { tg.ready(); tg.expand(); }
+
+  document.querySelectorAll(".btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const action = btn.dataset.action;
+      if (!action) return;
+      if (tg && tg.sendData) tg.sendData(action);
+      else alert("Please open this menu from inside Telegram.");
+    });
+  });
+</script>
+</body>
+</html>
