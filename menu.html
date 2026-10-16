@@ -7,93 +7,90 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root{
-    --bg:#0f1722; --blue:#2AABEE; --green:#4CAF50; --red:#C0392B;
-    --text:#fff;
+    --bg:#0f1722;
+    --blue:#2AABEE;
+    --green:#4CAF50;
+    --red:#C0392B;
+    --purple:#8E44AD;
+    --text:#ffffff;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{
     background:var(--bg); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    min-height:100vh; padding:12px; -webkit-tap-highlight-color:transparent;
+    min-height:100vh; padding:14px 12px 32px;
+    -webkit-tap-highlight-color:transparent;
   }
-  .header{text-align:center;padding:14px 8px 18px;font-size:15px;opacity:.9;line-height:1.4;}
+  .header{
+    text-align:center;padding:8px 8px 20px;font-size:15px;
+    opacity:.9;line-height:1.5;
+  }
   .row{display:flex;gap:10px;margin-bottom:10px;}
-  .row.cols-2 > .btn{flex:1;}
+  .row.cols-2 > .btn{flex:1 1 0;min-width:0;}
   .btn{
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    width:100%;padding:20px 14px;border:none;border-radius:12px;
-    color:#fff;font-size:17px;font-weight:600;cursor:pointer;text-align:center;
-    text-decoration:none;transition:filter .15s;user-select:none;
-    font-family:inherit;
+    display:flex;align-items:center;justify-content:flex-start;gap:12px;
+    width:100%;padding:18px 16px;border:none;border-radius:12px;
+    color:#fff;font-size:16px;font-weight:600;cursor:pointer;
+    text-align:left;transition:filter .12s;user-select:none;
+    font-family:inherit;line-height:1.25;
   }
   .btn:active{filter:brightness(.85);}
   .btn.blue{background:var(--blue);}
   .btn.green{background:var(--green);}
   .btn.red{background:var(--red);}
-  .btn .icon{font-size:22px;line-height:1;}
-  .btn .label{flex:1;}
-  .btn .arrow{font-size:18px;opacity:.85;}
+  .btn.purple{background:var(--purple);}
+  .btn .icon{font-size:22px;line-height:1;flex-shrink:0;}
+  .btn .label{flex:1;min-width:0;word-break:break-word;}
   .hidden{display:none !important;}
 </style>
 </head>
 <body>
 
-<div class="header">✅ Start using our bot now by clicking<br>the buttons below.</div>
+<div class="header">👋 Use the menu below to get started.</div>
 
+<!-- 🛍️ Buy Telegram Accounts — full width, blue -->
 <div class="row">
   <button class="btn blue" data-action="shop_0">
     <span class="icon">🛍️</span>
-    <span class="label">Buy TG Accounts - Sessions</span>
+    <span class="label">Buy Telegram Accounts</span>
   </button>
 </div>
 
+<!-- 🧑‍💼 My Profile  |  💰 Top-Up Balance -->
 <div class="row cols-2">
-  <button class="btn green" data-action="shop_0">
-    <span class="icon">➡️</span>
-    <span class="label">Sell TG Accounts</span>
-    <span class="arrow">↗</span>
-  </button>
-  <button class="btn blue" data-action="shop_0">
-    <span class="icon">🔍</span>
-    <span class="label">Available Countries</span>
-  </button>
-</div>
-
-<div class="row cols-2">
-  <button class="btn blue" data-action="recharge">
-    <span class="icon">💸</span>
-    <span class="label">Add Funds</span>
-  </button>
   <button class="btn blue" data-action="account">
-    <span class="icon">🔗</span>
-    <span class="label">Referral</span>
+    <span class="icon">🧑‍💼</span>
+    <span class="label">My Profile</span>
+  </button>
+  <button class="btn green" data-action="recharge">
+    <span class="icon">💰</span>
+    <span class="label">Top-Up Balance</span>
   </button>
 </div>
 
+<!-- 📜 Terms & Rules  |  🔖 Special Discount Accounts -->
 <div class="row cols-2">
-  <button class="btn red" data-action="account">
-    <span class="icon">📄</span>
-    <span class="label">History</span>
-  </button>
   <button class="btn red" data-action="rules">
-    <span class="icon">📋</span>
-    <span class="label">Rules</span>
+    <span class="icon">📜</span>
+    <span class="label">Terms &amp; Rules</span>
   </button>
-</div>
-
-<div class="row cols-2">
-  <button class="btn blue" data-action="open_contact">
-    <span class="icon">👨‍💼</span>
-    <span class="label">Help Service</span>
-  </button>
-  <button class="btn blue" data-action="open_proof">
+  <button class="btn purple" data-action="open_proof">
     <span class="icon">🔖</span>
-    <span class="label">Special Discount</span>
+    <span class="label" id="proofLabel">Special Discount Accounts</span>
   </button>
 </div>
 
+<!-- 📞 Contact Support — full width -->
+<div class="row">
+  <button class="btn blue" data-action="open_contact">
+    <span class="icon">📞</span>
+    <span class="label" id="contactLabel">Contact Support</span>
+  </button>
+</div>
+
+<!-- ⚙️ Admin Control — hidden for non-admins -->
 <div class="row hidden" id="adminRow">
-  <button class="btn green" data-action="admin">
+  <button class="btn red" data-action="admin">
     <span class="icon">⚙️</span>
     <span class="label">Admin Control</span>
   </button>
@@ -103,21 +100,22 @@
   const tg = window.Telegram?.WebApp;
   const params = new URLSearchParams(location.search);
 
+  // Show admin row only if admin=1
   if (params.get("admin") === "1") {
     document.getElementById("adminRow").classList.remove("hidden");
   }
 
-  const proofLabel = params.get("pt");
-  const contactLabel = params.get("ct");
-  if (proofLabel) {
-    document.querySelectorAll('[data-action="open_proof"] .label').forEach(el => {
-      el.textContent = proofLabel;
-    });
+  // Override proof / contact labels from bot's admin-set texts (params pt / ct)
+  const proofOverride = params.get("pt");
+  const contactOverride = params.get("ct");
+  if (proofOverride) {
+    // strip any leading emoji from the override so we keep our nice 🔖 icon
+    const cleaned = proofOverride.replace(/^[\p{Emoji}\s]+/u, "").trim();
+    if (cleaned) document.getElementById("proofLabel").textContent = cleaned;
   }
-  if (contactLabel) {
-    document.querySelectorAll('[data-action="open_contact"] .label').forEach(el => {
-      el.textContent = contactLabel;
-    });
+  if (contactOverride) {
+    const cleaned = contactOverride.replace(/^[\p{Emoji}\s]+/u, "").trim();
+    if (cleaned) document.getElementById("contactLabel").textContent = cleaned;
   }
 
   if (tg) { tg.ready(); tg.expand(); }
